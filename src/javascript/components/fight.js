@@ -1,40 +1,39 @@
 import controls from '../../constants/controls';
 
-const chance = () => Math.random() * 2;
 const pressKeys = new Map();
 let fighters = [];
 
 export function getHitPower(fighter) {
     const { attack } = fighter;
+    const randomNumber = Math.random() * 2;
     const { keys, time } = fighter;
     if (keys && time) {
+        // console.log('HitAttack');
         return attack * 2;
     }
-    return attack * chance();
+    return attack * randomNumber;
 }
 
 export function updateHealthIndicator(position, value) {
-    // console.log(position, value);
+    // // console.log(position, value);
     document.getElementById(`${position}-fighter-indicator`).style.width = `${value}%`;
 }
 
 export function getBlockPower(fighter) {
     const { defense } = fighter;
-    // console.log(fighter, chance());
-    return defense * chance();
+    const randomNumber = Math.random() * 2;
+    return defense * randomNumber;
     // return block power
 }
 export function getDamage(attacker, defender) {
-    const hitPower = getHitPower(attacker);
-    const blockPower = getBlockPower(defender);
-    // console.log(hitPower, blockPower);
-    const damage = hitPower - blockPower <= 0 ? 0 : hitPower - blockPower;
-    return damage;
+    // // console.log(hitPower, blockPower);
+    const damage = getHitPower(attacker) - getBlockPower(defender);
+    return damage <= 0 ? 0 : damage;
     // return damage
 }
 
 function setHealtPercentage(actual, health, postion) {
-    // console.log(actual, health, postion);
+    // // console.log(actual, health, postion);
     let percentage = actual;
     percentage = percentage <= 0 ? 0 : (actual * 100) / health;
     updateHealthIndicator(postion, percentage);
@@ -42,23 +41,24 @@ function setHealtPercentage(actual, health, postion) {
 
 function isWin(first, second, resolve) {
     if (second.health <= 0) {
-        // console.log('first won');
+        // // console.log('first won');
         resolve(first);
     } else if (first.health <= 0) {
-        // console.log('second won');
+        // // console.log('second won');
         resolve(second);
     }
 }
 
 function attacks(attacker, attacked, position) {
     let damage = 0;
-    // console.log(`${attacker.name} attack ${attacked.name}`);
+    // // console.log(`${attacker.name} attack ${attacked.name}`);
     if (!attacked.blocked || (attacker.keys && attacker.time)) {
         damage = getDamage(attacker, attacked);
         // eslint-disable-next-line operator-assignment, no-param-reassign
         attacked.health = attacked.health - damage;
-        // console.log(`${attacked.name} receives ${damage} damage`);
-        // console.log(`${attacked.name} health is ${attacked.health}`);
+        // // console.log(`${attacked.name} receives ${damage} damage`);
+        // // console.log(`${attacked.name} health is ${attacked.health}`);
+        // console.log(attacked.name, attacked.health, attacked.total);
         setHealtPercentage(attacked.health, attacked.total, position);
     } else {
         // console.log(`${attacked.name} evads the attack`);
@@ -69,7 +69,7 @@ function validateHitAttack(attacked, controlKeys, index) {
     const fighter = fighters[index];
     fighter.keys = true;
     controlKeys.forEach(control => {
-        // console.log(control, fighter.keys, pressKeys.has(control));
+        // // console.log(control, fighter.keys, pressKeys.has(control));
         fighter.keys = fighter.keys && pressKeys.has(control);
     });
     if (fighter.keys && fighter.time) {
@@ -82,20 +82,15 @@ function validateHitAttack(attacked, controlKeys, index) {
 }
 
 function validateKeys(first, second) {
-    // let keys = '';
-    // pressKeys.forEach((values, key) => {
-    //     keys += `${key} `;
-    // });
-    // console.log(keys);
-    validateHitAttack(first, second, controls.PlayerOneCriticalHitCombination, 0);
-    validateHitAttack(second, first, controls.PlayerTwoCriticalHitCombination, 1);
+    validateHitAttack(second, controls.PlayerOneCriticalHitCombination, 0);
+    validateHitAttack(first, controls.PlayerTwoCriticalHitCombination, 1);
 }
 function keyUpAction(event, resolve) {
     const { code } = event;
     const [first, second] = fighters;
     pressKeys.delete(code);
-    // console.log(event);
-    // console.log(event.code);
+    // // console.log(event);
+    // // console.log(event.code);
     if (code === controls.PlayerOneAttack) {
         attacks(first, second, 'right');
     } else if (code === controls.PlayerOneBlock) {
@@ -128,8 +123,8 @@ export async function fight(firstFighter, secondFighter) {
         { ...secondFighter, total: secondFighter.health, blocked: false, ...canMakeHitCombination }
     ];
     return new Promise(resolve => {
-        // // console.log(pressKeys.values);
-        // // console.log(fighters);
+        // // // console.log(pressKeys.values);
+        // // // console.log(fighters);
         document.addEventListener('keyup', event => keyUpAction(event, resolve));
         document.addEventListener('keydown', event => keyDownAction(event, resolve));
         // resolve- the promise with the winner when fight is over

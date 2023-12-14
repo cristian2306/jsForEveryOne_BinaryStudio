@@ -1,9 +1,10 @@
+import { createFighterImage } from '../fighterPreview';
 import showModal from './modal';
 
 export default function showWinnerModal(fighter) {
     showModal({
-        title: 'Felicidades',
-        bodyElement: `${fighter.name} ha vencido`
+        title: 'WIN!!!',
+        bodyElement: createFighterImage(fighter)
     });
     // call showModal function
 }
