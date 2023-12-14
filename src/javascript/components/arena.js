@@ -1,5 +1,7 @@
 import createElement from '../helpers/domHelper';
+import { fight } from './fight';
 import { createFighterImage } from './fighterPreview';
+import showWinnerModal from './modal/winner';
 
 function createFighter(fighter, position) {
     const imgElement = createFighterImage(fighter);
@@ -62,9 +64,13 @@ function createArena(selectedFighters) {
 export default function renderArena(selectedFighters) {
     const root = document.getElementById('root');
     const arena = createArena(selectedFighters);
-
     root.innerHTML = '';
     root.append(arena);
+    fight(selectedFighters[0], selectedFighters[1]).then(fighter => {
+        // console.log('Se supone que ya gano alguno, porque no se detiene');
+        // console.log(fighter);
+        showWinnerModal(fighter);
+    });
 
     // todo:
     // - start the fight

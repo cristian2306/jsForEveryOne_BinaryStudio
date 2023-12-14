@@ -21,6 +21,11 @@ class App {
             App.loadingElement.style.visibility = 'hidden';
         }
     }
+
+    static async restartApp() {
+        this.rootElement.innerHTML = '';
+        this.startApp();
+    }
 }
 
 export default App;
