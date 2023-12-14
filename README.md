@@ -1,1 +1,0 @@
-# jsForEveryOne_BinaryStudio
